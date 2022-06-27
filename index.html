@@ -25,6 +25,7 @@
   <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
   <script src="https://cdn.jsdelivr.net/npm/airtable@0.11.4/lib/airtable.umd.min.js" ></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js" crossorigin="anonymous"></script>
   <script type="text/babel">
     var App = (props) => {
         const { useState, useEffect } = React;
@@ -51,7 +52,7 @@
             const [success, setSuccess] = useState(null);
 
             useEffect(() => {
-                setDateValue(new Date().toJSON().slice(0,16));
+                setDateValue(moment().format('YYYY-MM-DDTHH:mm'));
             }, []);
 
             if (loading) {
@@ -77,7 +78,7 @@
                     base('Teddy toilet diary').create([
                         {
                             "fields": {
-                                "Date": new Date(dateValue).toJSON(),
+                                "Date": moment(dateValue).toJSON(),
                                 "Action": activityOption,
                                 "Dry undies / nappy": dryUndiesOption
                             }
