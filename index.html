@@ -23,6 +23,7 @@
   <div id="place-app"> </div>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
   <script src="https://cdn.jsdelivr.net/npm/airtable@0.11.4/lib/airtable.umd.min.js" ></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.3/moment.min.js" crossorigin="anonymous"></script>
@@ -45,7 +46,7 @@
 
         const Form = () => {
             const [dateValue, setDateValue] = useState('');
-            const [activityOption, setActivityOption] = useState(null);
+            const [activityOptions, setActivityOptions] = useState([]);
             const [dryUndiesOption, setDryUndiesOption] = useState(false);
 
             const [loading, setLoading] = useState(false);
@@ -64,6 +65,7 @@
                 );
             }
             if (success) {
+                setTimeout(() => { window.location.reload() }, 2000);
                 return (
                     <div className="fixed-centre text-center">
                         <button className="btn btn-light" onClick={() => { window.location.reload(); }}>Done, start again</button>
@@ -79,7 +81,7 @@
                         {
                             "fields": {
                                 "Date": moment(dateValue).toJSON(),
-                                "Action": activityOption,
+                                "Action": activityOptions,
                                 "Dry undies / nappy": dryUndiesOption
                             }
                         }
@@ -110,7 +112,20 @@
                         {INPUT_ACTION_VALUES.map(value => (
                             <div className="form-check" key={value}>
                                 <label className="form-check-label">
-                                    <input className="form-check-input" required type="radio" name="input-activity-option" value={value} checked={activityOption===value} onChange={({ target }) => { setActivityOption(value) }}/>
+                                    <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        name="input-activity-option[]"
+                                        value={value}
+                                        checked={activityOptions.indexOf(value) >= 0}
+                                        onChange={({ target }) => {
+                                            if (target.checked) {
+                                                setActivityOptions(_.uniq(activityOptions.concat(target.value)));
+                                            } else {
+                                                setActivityOptions(_.chain(activityOptions).without(target.value).uniq().value());
+                                            }
+                                        }}
+                                    />
                                     {value}
                                 </label>
                             </div>
